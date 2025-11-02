@@ -6,7 +6,7 @@ enum Opcode : uint {
   Package = 0,        // package <identifier> | Type1
   Import = 1,         // import "<path>" | Type1
   Const,              // const <name> = <expr> | Type1
-  ConstValue,         // <name> = <expr>
+  ConstValue,         // <name> = <expr> | Type2
   Var,                // var <name> = <expr> | Type1
   Type,               // type <name> <type> | Type2
   Func,               // func <name>(...) { ... } | Type1
@@ -96,19 +96,21 @@ enum Opcode : uint {
 }
 
 enum Flag : uint {
+  None = 0,
   NodeType1 = 1,
   NodeType2 = 2,
   NodeType3 = 4,
 }
 
 enum ValueFlag : uint {
+  None = 0,
   Pointer = 1,
 }
 
 table NodeValue {
   type:uint;
   value:long; // look up table for value
-  flags:uint;
+  flags:ValueFlag;
 }
 
 union NodeUnion {
@@ -130,13 +132,13 @@ table Type2 {
 table Type3 {
   value:NodeValue; // Any flags stored outside of the node content
 }
-
+ 
 table Node {
   id:long;             // unique node id
   opcode:Opcode;       // opcode of node
   parent:long;         // parent node id
   next:long;           // next sibling id
-  flags:uint;          // contains the node type and miscellanous flags     
+  flags:Flag;          // contains the node type and miscellanous flags     
   node:NodeUnion;      // actual node contents
 }
 
