@@ -1,13 +1,17 @@
 namespace tree;
 
+
+
 // Represents all compiler opcodes generated from node types in Opticode.
 enum Opcode : uint {
   // --- Declarations ---
   Package = 0,        // package <identifier> | Type1
   Import = 1,         // import "<path>" | Type1
+  ImportValue,        // <name> "<url>"   | Type2
   Const,              // const <name> = <expr> | Type1
   ConstValue,         // <name> = <expr> | Type2
   Var,                // var <name> = <expr> | Type1
+  VarValue,           // <name> = <expr> | Type2
   Type,               // type <name> <type> | Type2
   Func,               // func <name>(...) { ... } | Type1
 
@@ -145,6 +149,9 @@ table Node {
 table Program {
   nodes:[Node]; // flat array of all nodes
   name:string;
+  schver:string = "0.0.1"; // Schema version
+  wailsver:string; // Version of wails
+  version:string; // Version of the program
   flags:uint; // I don't know what I would use this for yet
 }
 
