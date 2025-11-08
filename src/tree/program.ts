@@ -42,13 +42,34 @@ name(optionalEncoding?:any):string|Uint8Array|null {
   return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
 }
 
-flags():number {
+schver():string|null
+schver(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
+schver(optionalEncoding?:any):string|Uint8Array|null {
   const offset = this.bb!.__offset(this.bb_pos, 8);
+  return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
+}
+
+wailsver():string|null
+wailsver(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
+wailsver(optionalEncoding?:any):string|Uint8Array|null {
+  const offset = this.bb!.__offset(this.bb_pos, 10);
+  return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
+}
+
+version():string|null
+version(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
+version(optionalEncoding?:any):string|Uint8Array|null {
+  const offset = this.bb!.__offset(this.bb_pos, 12);
+  return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
+}
+
+flags():number {
+  const offset = this.bb!.__offset(this.bb_pos, 14);
   return offset ? this.bb!.readUint32(this.bb_pos + offset) : 0;
 }
 
 static startProgram(builder:flatbuffers.Builder) {
-  builder.startObject(3);
+  builder.startObject(6);
 }
 
 static addNodes(builder:flatbuffers.Builder, nodesOffset:flatbuffers.Offset) {
@@ -71,8 +92,20 @@ static addName(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset) {
   builder.addFieldOffset(1, nameOffset, 0);
 }
 
+static addSchver(builder:flatbuffers.Builder, schverOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(2, schverOffset, 0);
+}
+
+static addWailsver(builder:flatbuffers.Builder, wailsverOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(3, wailsverOffset, 0);
+}
+
+static addVersion(builder:flatbuffers.Builder, versionOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(4, versionOffset, 0);
+}
+
 static addFlags(builder:flatbuffers.Builder, flags:number) {
-  builder.addFieldInt32(2, flags, 0);
+  builder.addFieldInt32(5, flags, 0);
 }
 
 static endProgram(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -88,10 +121,13 @@ static finishSizePrefixedProgramBuffer(builder:flatbuffers.Builder, offset:flatb
   builder.finish(offset, undefined, true);
 }
 
-static createProgram(builder:flatbuffers.Builder, nodesOffset:flatbuffers.Offset, nameOffset:flatbuffers.Offset, flags:number):flatbuffers.Offset {
+static createProgram(builder:flatbuffers.Builder, nodesOffset:flatbuffers.Offset, nameOffset:flatbuffers.Offset, schverOffset:flatbuffers.Offset, wailsverOffset:flatbuffers.Offset, versionOffset:flatbuffers.Offset, flags:number):flatbuffers.Offset {
   Program.startProgram(builder);
   Program.addNodes(builder, nodesOffset);
   Program.addName(builder, nameOffset);
+  Program.addSchver(builder, schverOffset);
+  Program.addWailsver(builder, wailsverOffset);
+  Program.addVersion(builder, versionOffset);
   Program.addFlags(builder, flags);
   return Program.endProgram(builder);
 }

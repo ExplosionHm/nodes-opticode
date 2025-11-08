@@ -139,22 +139,34 @@ export class GoBuilder<T extends GoSchema> {
     };
   }
 
-  public CreateImportNode(...imports: string[]): Node {
-    //! Should follow the const node style
+  public CreateImportValueNode(path: string, alias?: string): Node {
+    return {
+      opcode: tree.Opcode.ImportValue,
+      left: {
+        value: alias || "",
+        flags: 0,
+      },
+      right: {
+        value: path,
+        flags: 0,
+      },
+      flags: tree.Flag.NodeType2,
+    };
+  }
+
+  public CreateImportNode(...imports: number[]): Node {
     return {
       opcode: tree.Opcode.Import,
-      fields: imports.map((v: string): NodeValue => {
-        if (v.length <= 0)
-          console.error(`Length of import id must be greater than zero!`);
+      fields: imports.map((v: number): NodeValue => {
         return {
           value: v,
-          flags: 0,
+          flags: tree.ValueFlag.Pointer,
         };
       }),
       flags: tree.Flag.NodeType1,
     };
   }
-  //! Idk how I want to handle things with mutiple nodes
+
   /* public SetConstNode(constants: Map<string, string | number>): Node {
     const { size } = constants;
     const nodes = new Array<Node>(size + 1);
@@ -297,6 +309,10 @@ export class GoBuilder<T extends GoSchema> {
     return tree.Type3.endType3(this.builder);
   }
 
+  public GetLut(): Uint8Array {
+    return new Uint8Array();
+  }
+
   public Build(flags: number = 0): Uint8Array {
     this.builder.clear();
     // TODO: FIX OBJECT NESTING: you can't nest the starts and ends within eachother
@@ -355,7 +371,10 @@ for (let i = 0; i < 1; i++) {
   const packageNode = builder.CreatePackageNode("main");
   const packageId = builder.SetNode(packageNode);
 
-  const importNode = builder.CreateImportNode("fmt", "strconv");
+  const fmtNode = builder.CreateImportValueNode("fmt");
+  const fmt = builder.SetNode(fmtNode);
+
+  const importNode = builder.CreateImportNode(fmt);
   const importId = builder.SetNode(importNode);
 
   builder.ConnectNodes(packageId, importId);
@@ -374,25 +393,3 @@ writeFile("nodes.opt", output, { signal }, (err) => {
   if (!err) return;
   console.error(err);
 });
-/* const options: GoBuilderOptions = {
-  schema: "go",
-};
-
-const builder = new GoBuilder(options);
-
-function onNodeCreate(opcode: number, identifier: string): void {
-  const node = builder.CreatePackageNode(identifier);
-  const id = builder.SetNode(node);
-  // visualSystem.addVisualNode(id, node); // UI sync
-}
-
-function onNodeFieldUpdate(id: number, index: number, value: any): void {
-  builder.UpdateNodeField(id, index, value);
-  // visualSystem.refreshNode(id); // UI sync
-}
-
-function onNodeConnect(sourceId: number, targetId: number): void {
-  builder.UpdateNodeParent(sourceId, targetId);
-  builder.UpdateNodeChild(targetId, sourceId);
-  // visualSystem.refreshNode(id); // UI sync
-} */

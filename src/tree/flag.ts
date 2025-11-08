@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
 export enum Flag {
+  None = 0,
   NodeType1 = 1,
   NodeType2 = 2,
   NodeType3 = 4

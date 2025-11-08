@@ -4,6 +4,7 @@
 
 import * as flatbuffers from 'flatbuffers';
 
+import { Flag } from '../tree/flag.js';
 import { NodeUnion, unionToNodeUnion, unionListToNodeUnion } from '../tree/node-union.js';
 import { Opcode } from '../tree/opcode.js';
 
@@ -46,9 +47,9 @@ next():bigint {
   return offset ? this.bb!.readInt64(this.bb_pos + offset) : BigInt('0');
 }
 
-flags():number {
+flags():Flag {
   const offset = this.bb!.__offset(this.bb_pos, 12);
-  return offset ? this.bb!.readUint32(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.readUint32(this.bb_pos + offset) : Flag.None;
 }
 
 nodeType():NodeUnion {
@@ -81,8 +82,8 @@ static addNext(builder:flatbuffers.Builder, next:bigint) {
   builder.addFieldInt64(3, next, BigInt('0'));
 }
 
-static addFlags(builder:flatbuffers.Builder, flags:number) {
-  builder.addFieldInt32(4, flags, 0);
+static addFlags(builder:flatbuffers.Builder, flags:Flag) {
+  builder.addFieldInt32(4, flags, Flag.None);
 }
 
 static addNodeType(builder:flatbuffers.Builder, nodeType:NodeUnion) {
@@ -98,7 +99,7 @@ static endNode(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 }
 
-static createNode(builder:flatbuffers.Builder, id:bigint, opcode:Opcode, parent:bigint, next:bigint, flags:number, nodeType:NodeUnion, nodeOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createNode(builder:flatbuffers.Builder, id:bigint, opcode:Opcode, parent:bigint, next:bigint, flags:Flag, nodeType:NodeUnion, nodeOffset:flatbuffers.Offset):flatbuffers.Offset {
   Node.startNode(builder);
   Node.addId(builder, id);
   Node.addOpcode(builder, opcode);

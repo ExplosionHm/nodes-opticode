@@ -4,6 +4,9 @@
 
 import * as flatbuffers from 'flatbuffers';
 
+import { ValueFlag } from '../tree/value-flag.js';
+
+
 export class NodeValue {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
@@ -32,9 +35,9 @@ value():bigint {
   return offset ? this.bb!.readInt64(this.bb_pos + offset) : BigInt('0');
 }
 
-flags():number {
+flags():ValueFlag {
   const offset = this.bb!.__offset(this.bb_pos, 8);
-  return offset ? this.bb!.readUint32(this.bb_pos + offset) : 0;
+  return offset ? this.bb!.readUint32(this.bb_pos + offset) : ValueFlag.None;
 }
 
 static startNodeValue(builder:flatbuffers.Builder) {
@@ -49,8 +52,8 @@ static addValue(builder:flatbuffers.Builder, value:bigint) {
   builder.addFieldInt64(1, value, BigInt('0'));
 }
 
-static addFlags(builder:flatbuffers.Builder, flags:number) {
-  builder.addFieldInt32(2, flags, 0);
+static addFlags(builder:flatbuffers.Builder, flags:ValueFlag) {
+  builder.addFieldInt32(2, flags, ValueFlag.None);
 }
 
 static endNodeValue(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -58,7 +61,7 @@ static endNodeValue(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 }
 
-static createNodeValue(builder:flatbuffers.Builder, type:number, value:bigint, flags:number):flatbuffers.Offset {
+static createNodeValue(builder:flatbuffers.Builder, type:number, value:bigint, flags:ValueFlag):flatbuffers.Offset {
   NodeValue.startNodeValue(builder);
   NodeValue.addType(builder, type);
   NodeValue.addValue(builder, value);
